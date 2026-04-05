@@ -1,0 +1,23 @@
+services:
+  backend:
+    build: ./backend
+    container_name: inventory_backend
+    ports:
+      - "3001:3001"
+    volumes:
+      # Isso mantém o seu arquivo .sqlite salvo no seu computador real
+      - ./backend/data:/app/data
+    environment:
+      - PORT=3001
+      # Certifique-se que no seu app.module.ts o caminho do SQLite seja /app/data/database.sqlite
+      - DATABASE_PATH=/app/data/database.sqlite 
+
+  frontend:
+    build: ./frontend
+    container_name: inventory_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    depends_on:
+      - backend

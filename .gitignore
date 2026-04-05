@@ -1,0 +1,16 @@
+# Dependências
+node_modules/
+.next/
+dist/
+
+# Banco de Dados SQLite
+*.sqlite
+*.sqlite-journal
+backend/data/
+
+# Variáveis de ambiente (Segurança)
+.env
+.env.local
+
+# Docker
+.docker/
