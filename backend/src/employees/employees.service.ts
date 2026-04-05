@@ -3,16 +3,17 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-} from '@nestjs/common';
+  Logger,
+} from "@nestjs/common";
 import {
   CreateEmployeeDto,
   FindAllParametersEmployees,
-} from './dto/create-employee.dto';
-import { UpdateEmployeeDto } from './dto/update-employee.dto';
-import { Employee } from './entities/employee.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Like, Repository } from 'typeorm';
-import { plainToInstance } from 'class-transformer';
+} from "./dto/create-employee.dto";
+import { UpdateEmployeeDto } from "./dto/update-employee.dto";
+import { Employee } from "./entities/employee.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { FindOptionsWhere, Like, Repository } from "typeorm";
+import { plainToInstance } from "class-transformer";
 
 @Injectable()
 export class EmployeesService {
@@ -30,11 +31,19 @@ export class EmployeesService {
         `Employee with cpf: ${createEmployeeDto.cpf} already registered`,
       );
     }
-    const dbEmployee = this.employee.create(createEmployeeDto);
+    try {
+      const newEmployee = this.employee.create(createEmployeeDto);
 
-    const savedEmployee = await this.employee.save(dbEmployee);
+      const savedEmployee = await this.employee.save(newEmployee);
 
-    return this.mapEntityToDto(savedEmployee);
+      return this.mapEntityToDto(savedEmployee);
+    } catch (err: unknown) {
+      Logger.error(
+        { data: err instanceof Error ? err.message : err },
+        `[EMPLOYEE SERVICE] Error creating an employee entry.`,
+      );
+      throw err;
+    }
   }
 
   async findAll(

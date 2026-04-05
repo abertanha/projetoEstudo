@@ -1,17 +1,17 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import {
   CreateAssignmentDto,
   FindAllParametersAssignments,
-} from './dto/create-assignment.dto';
-import { UpdateAssignmentDto } from './dto/update-assignment.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Assignment } from './entities/assignment.entity';
-import { FindOptionsWhere, Repository } from 'typeorm';
-import { AssetsService } from 'src/assets/assets.service';
-import { EmployeesService } from 'src/employees/employees.service';
-import { plainToInstance } from 'class-transformer';
-import { Asset, assetStatus } from 'src/assets/entities/asset.entity';
-import { DataSource } from 'typeorm';
+} from "./dto/create-assignment.dto";
+import { UpdateAssignmentDto } from "./dto/update-assignment.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Assignment } from "./entities/assignment.entity";
+import { FindOptionsWhere, Repository } from "typeorm";
+import { AssetsService } from "src/assets/assets.service";
+import { EmployeesService } from "src/employees/employees.service";
+import { plainToInstance } from "class-transformer";
+import { Asset, assetStatus } from "src/assets/entities/asset.entity";
+import { DataSource } from "typeorm";
 
 @Injectable()
 export class AssignmentsService {
@@ -47,25 +47,28 @@ export class AssignmentsService {
     const queryRunner = this.dataSouce.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    try {
-      await queryRunner.manager.update(Asset, createAssignmentDto.assetId, {
-        status: assetStatus.inUse,
-      });
 
+    try {
       const newAssignment = queryRunner.manager.create(Assignment, {
         ...createAssignmentDto,
         asset: assetFound,
         employee: foundEmployee,
       });
 
-      const savedAssignment = await this.assignment.save(newAssignment);
+      const savedAssignment = await queryRunner.manager.save(newAssignment);
+
+      await queryRunner.manager.update(Asset, createAssignmentDto.assetId, {
+        status: assetStatus.inUse,
+      });
+
       await queryRunner.commitTransaction();
+
       return this.mapEntityToDto(savedAssignment);
     } catch (err: unknown) {
       await queryRunner.rollbackTransaction();
       Logger.error(
         { data: err instanceof Error ? err.message : err },
-        `[ASSIGNMENT SERVICE] Error creating an assignment.`,
+        `[ASSIGNMENT SERVICE] Error creating an assignment entry.`,
       );
       throw err;
     } finally {

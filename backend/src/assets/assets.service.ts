@@ -3,16 +3,17 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-} from '@nestjs/common';
+  Logger,
+} from "@nestjs/common";
 import {
   CreateAssetDto,
   FindAllParametersAssets,
-} from './dto/create-asset.dto';
-import { UpdateAssetDto } from './dto/update-asset.dto';
-import { Asset, assetStatus } from './entities/asset.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Like, Repository } from 'typeorm';
-import { plainToInstance } from 'class-transformer';
+} from "./dto/create-asset.dto";
+import { UpdateAssetDto } from "./dto/update-asset.dto";
+import { Asset, assetStatus } from "./entities/asset.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { FindOptionsWhere, Like, Repository } from "typeorm";
+import { plainToInstance } from "class-transformer";
 
 @Injectable()
 export class AssetsService {
@@ -30,11 +31,19 @@ export class AssetsService {
         `Serial number: ${createAssetDto.numeroDeSerie} already registered`,
       );
     }
-    const dbAsset = this.asset.create(createAssetDto);
+    try {
+      const newAsset = this.asset.create(createAssetDto);
 
-    const savedAsset = await this.asset.save(dbAsset);
+      const savedAsset = await this.asset.save(newAsset);
 
-    return this.mapEntityToDto(savedAsset);
+      return this.mapEntityToDto(savedAsset);
+    } catch (err: unknown) {
+      Logger.error(
+        { data: err instanceof Error ? err.message : err },
+        `[ASSET SERVICE] Error creating an employee entry.`,
+      );
+      throw err;
+    }
   }
 
   async findAll(params: FindAllParametersAssets): Promise<CreateAssetDto[]> {
