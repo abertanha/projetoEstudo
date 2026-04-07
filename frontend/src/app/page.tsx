@@ -12,6 +12,9 @@ import { Badge } from "@/components/ui/badge"
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 
 interface Asset {
   id: string;
@@ -40,6 +43,14 @@ export default function AssetsPage() {
 
   return (
     <main className="container mx-auto py-10">
+      <div className="flex justify-between items-center mb-6">
+      <h1 className="text-3xl font-bold">Ativos</h1>
+        <Button asChild>
+          <Link href="/assets/new">
+            <Plus className="mr-2 h-4 w-4" /> Novo Equipamento
+          </Link>
+        </Button>
+    </div>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Inventário Real (NestJS + Next.js)</CardTitle>

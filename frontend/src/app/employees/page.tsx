@@ -16,12 +16,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
+// Interface alinhada com o que o backend retorna
 interface Employee {
   id: string;
   nome: string;
   email: string;
-  cargo: string;
-  departamento: string;
+  cpf: string;              // ✅ adicionado
+  departament: string;      // ✅ spelling corrigido (sem "o" no final)
   isActive: boolean;
 }
 
@@ -31,6 +32,11 @@ export default function EmployeesPage() {
   useEffect(() => {
     api.get("/employees").then((res) => setEmployees(res.data));
   }, []);
+
+  // Função para formatar CPF: 12345678901 → 123.456.789-01
+  const formatCPF = (cpf: string) => {
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  };
 
   return (
     <main className="container mx-auto py-10">
@@ -49,7 +55,8 @@ export default function EmployeesPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Nome</TableHead>
-                <TableHead>E-mail / Cargo</TableHead>
+                <TableHead>E-mail</TableHead>
+                <TableHead>CPF</TableHead>
                 <TableHead>Departamento</TableHead>
                 <TableHead className="text-right">Status</TableHead>
               </TableRow>
@@ -58,11 +65,9 @@ export default function EmployeesPage() {
               {employees.map((emp) => (
                 <TableRow key={emp.id}>
                   <TableCell className="font-medium">{emp.nome}</TableCell>
-                  <TableCell>
-                    <div className="text-sm font-medium">{emp.email}</div>
-                    <div className="text-xs text-muted-foreground">{emp.cargo}</div>
-                  </TableCell>
-                  <TableCell>{emp.departamento}</TableCell>
+                  <TableCell>{emp.email}</TableCell>
+                  <TableCell>{formatCPF(emp.cpf)}</TableCell>
+                  <TableCell>{emp.departament}</TableCell>
                   <TableCell className="text-right">
                     <Badge variant={emp.isActive ? "default" : "destructive"}>
                       {emp.isActive ? "Ativo" : "Inativo"}

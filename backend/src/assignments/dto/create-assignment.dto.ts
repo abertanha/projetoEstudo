@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsDate, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateAssignmentDto {
@@ -11,12 +12,15 @@ export class CreateAssignmentDto {
   @IsUUID()
   employeeId!: string;
 
+  @Type(() => Date)
   @IsDate()
   dataDeSaida!: Date;
 
+  @Type(() => Date)
   @IsDate()
   dataRetornoPrevista!: Date;
 
+  @Type(() => Date)
   @IsDate()
   @IsOptional()
   dataRetornoReal?: Date;

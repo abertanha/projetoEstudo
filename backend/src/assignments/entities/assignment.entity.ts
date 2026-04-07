@@ -1,5 +1,5 @@
-import { Asset } from 'src/assets/entities/asset.entity';
-import { Employee } from 'src/employees/entities/employee.entity';
+import { Asset } from "src/assets/entities/asset.entity";
+import { Employee } from "src/employees/entities/employee.entity";
 import {
   Column,
   CreateDateColumn,
@@ -8,19 +8,19 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm';
+} from "typeorm";
 
-@Entity({ name: 'assignment' })
+@Entity({ name: "assignment" })
 export class Assignment {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id?: string;
 
   @ManyToOne(() => Asset, { eager: true })
-  @JoinColumn({ name: 'asset_id' })
+  @JoinColumn({ name: "asset_id" })
   asset!: Asset;
 
   @ManyToOne(() => Employee, { eager: true })
-  @JoinColumn({ name: 'employee_id' })
+  @JoinColumn({ name: "employee_id" })
   employee!: Employee;
 
   @Column()
@@ -29,7 +29,7 @@ export class Assignment {
   @Column()
   dataRetornoPrevista!: Date;
 
-  @Column()
+  @Column({ nullable: true })
   dataRetornoReal?: Date;
 
   @Column()
